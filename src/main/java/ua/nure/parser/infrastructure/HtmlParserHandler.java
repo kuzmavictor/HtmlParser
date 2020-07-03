@@ -38,10 +38,8 @@ public class HtmlParserHandler implements ParserHandler<Result, ParserContext> {
         sb.append("program_path: ");
         sb.append(programPath);
         sb.append("\n");
-        sb.append("input_origin_file_path: ");
         sb.append(originalPath);
         sb.append("\n");
-        sb.append("input_other_file_path: ");
         sb.append(otherPath);
         sb.append("\n");
 
@@ -58,13 +56,12 @@ public class HtmlParserHandler implements ParserHandler<Result, ParserContext> {
 
         Elements elements = document.body().getAllElements();
 
-
         for (Element element : elements) {
+
             if (!element.ownText().isEmpty()) {
                 createPath(element, htmlElementParameters, true);
             }
         }
-        System.out.println(foundOriginalPath);
 
         return "input_origin_file_path: " + foundOriginalPath;
     }
@@ -78,7 +75,6 @@ public class HtmlParserHandler implements ParserHandler<Result, ParserContext> {
         }
 
         Elements elements = document.body().getAllElements();
-
 
         for (Element element : elements) {
             if (!element.ownText().isEmpty()) {
@@ -96,6 +92,7 @@ public class HtmlParserHandler implements ParserHandler<Result, ParserContext> {
         if (elementById == null) {
             throw new ParserException("The target data does not exist.");
         }
+
         String href = document.getElementById(elementToFound).attr("href");
         String text = document.getElementById(elementToFound).text();
         String className = document.getElementById(elementToFound).className();
@@ -105,18 +102,20 @@ public class HtmlParserHandler implements ParserHandler<Result, ParserContext> {
 
     }
 
+    //TODO:2020-07-03:kuzma.victor: Add better implementation.
     private String createPath(Element element, HtmlElementParameters htmlElementParameters, boolean isOriginal) {
 
         String data = element.ownText();
         Elements parents = element.parents();
-
         StringBuilder path = new StringBuilder(element.nodeName());
 
-        parents.forEach(el -> path.insert(0, el.nodeName() + '>'));
+        parents.forEach(el -> {
+            path.insert(0, el.nodeName() + '>');
+        });
 
         new ArrayList<String>().add(path + " = " + data + "\n");
-
         if (data.equals(htmlElementParameters.getText())) {
+
             if (isOriginal) {
                 return foundOriginalPath = path + "=" + data;
             } else {
